@@ -5,6 +5,7 @@ pipeline {
         DOCKER_IMAGE = 'php-app'
         REPO_URL = 'https://github.com/Sahil3105/10thnovpracticaljen.git'
         GIT_BRANCH = 'main'
+        DOCKER_COMPOSE_PATH = '/usr/local/bin/docker-compose'  // Specify the path explicitly
     }
 
     stages {
@@ -29,15 +30,19 @@ pipeline {
         stage('Deploy with Docker Compose') {
             steps {
                 script {
-                    if (!sh(script: 'command -v docker-compose', returnStatus: true)) {
-                        error "docker-compose is not installed!"
+                    // Ensure docker-compose is installed and accessible
+                    def dockerComposeInstalled = sh(script: "command -v ${DOCKER_COMPOSE_PATH}", returnStatus: true) == 0
+                    if (!dockerComposeInstalled) {
+                        error "docker-compose is not installed or not in the expected location!"
                     }
 
+                    // Stopping any existing containers
                     echo "Stopping existing containers..."
-                    sh 'docker-compose down || true'
+                    sh "${DOCKER_COMPOSE_PATH} down || true"  // Gracefully handles if no containers are running
 
+                    // Starting containers in detached mode
                     echo "Starting containers with docker-compose..."
-                    sh 'docker-compose up -d'
+                    sh "${DOCKER_COMPOSE_PATH} up -d"
                 }
             }
         }

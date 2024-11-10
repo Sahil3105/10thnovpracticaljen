@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Clone the repository from GitHub
-                git 'https://github.com/your-username/your-repo.git'
+                git 'https://github.com/Sahil3105/10thnovpracticaljen.git'
             }
         }
         
